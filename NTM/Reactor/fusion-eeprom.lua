@@ -4,8 +4,6 @@ local gpuAddress = nil
 local status = nil
 local tripped = false
 local textBuffer = nil
-local minPower = 100000
-local tripPower = 30 * minPower
 local blanketMaxDurability = 0
 local gpuWidth = 50
 local gpuHeight = 16
@@ -69,12 +67,11 @@ while true do
     else
         blanketMaxDurability = 0
     end
-    local blanketDurability = blanketMaxDurability -component.invoke(
-        fusionAddress,
-        "getBlanketDamage"
-    )
+    local blanketDamage = component.invoke(fusionAddress, "getBlanketDamage")
+    if blanketDamage == "N/A" then blanketDamage = 0
+    local blanketDurability = blanketMaxDurability - blanketDamage
 
-    if (not tripped) and ((power <= tripPower) or (blanketDurability <= 100)) then
+    if (not tripped) and ((power <= 3000000) or ((blanketDurability <= 100) and active)) then
         trip()
     end
     local signal = {computer.pullSignal(0.05)}
