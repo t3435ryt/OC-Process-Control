@@ -76,7 +76,7 @@ while true do
     end
     local signal = {computer.pullSignal(0.05)}
     if signal[1] == "key_down" then
-        local _, keyboardAddress, char, code, playerName = table.unpack(signal)
+        local _, _, char, _, _ = table.unpack(signal)
         if char == 0x74 then
             trip()
         elseif char == 0x73 and (not tripped) then
