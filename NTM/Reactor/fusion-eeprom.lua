@@ -49,7 +49,7 @@ local trip = function()
     component.invoke(fusionAddress, "setActive", false)
 end
 
-gpuSet = function (x, y, string)
+local gpuSet = function (x, y, string)
     component.invoke(gpuAddress, "set", x,  y, string)
 end
 
