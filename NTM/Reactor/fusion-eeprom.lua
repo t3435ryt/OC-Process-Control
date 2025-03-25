@@ -68,7 +68,7 @@ while true do
         blanketMaxDurability = 0
     end
     local blanketDamage = component.invoke(fusionAddress, "getBlanketDamage")
-    if blanketDamage == "N/A" then blanketDamage = 0
+    if blanketDamage == "N/A" then blanketDamage = 0 end
     local blanketDurability = blanketMaxDurability - blanketDamage
 
     if (not tripped) and ((power <= 3000000) or ((blanketDurability <= 100) and active)) then
