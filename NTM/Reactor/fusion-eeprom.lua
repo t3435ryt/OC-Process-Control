@@ -5,8 +5,7 @@ local status = nil
 local tripped = false
 local textBuffer = nil
 local blanketMaxDurability = 0
-local gpuWidth = 50
-local gpuHeight = 16
+local com = component
 local textArray = {
     "",
     "",
@@ -25,7 +24,7 @@ local textArray = {
     "",
     ""}
 
-local componentList = component.list()
+local componentList = com.list()
 for address, componentType in componentList do
     if (componentType == "ntm_fusion") and (fusionAddress == nil) then
         fusionAddress = address
@@ -37,27 +36,27 @@ for address, componentType in componentList do
 end
 
 if gpuAddress then
-    component.invoke(gpuAddress, "bind", screenAddress)
-    textBuffer = component.invoke(gpuAddress, "allocateBuffer")
-    component.invoke(gpuAddress, "setActiveBuffer", textBuffer)
+    com.invoke(gpuAddress, "bind", screenAddress)
+    textBuffer = com.invoke(gpuAddress, "allocateBuffer")
+    com.invoke(gpuAddress, "setActiveBuffer", textBuffer)
 end
 
 local trip = function()
     tripped = true
-    component.invoke(fusionAddress, "setActive", false)
+    com.invoke(fusionAddress, "setActive", false)
 end
 
 local gpuSet = function (x, y, string)
-    component.invoke(gpuAddress, "set", x,  y, string)
+    com.invoke(gpuAddress, "set", x,  y, string)
 end
 
 while true do
-    local power, maxPower = component.invoke(fusionAddress, "getEnergyInfo")
-    local active = component.invoke(fusionAddress, "isActive")
+    local power, maxPower = com.invoke(fusionAddress, "getEnergyInfo")
+    local active = com.invoke(fusionAddress, "isActive")
     local water, maxWater, ultraDenseSteam, maxUltraDenseSteam, plasma,
-          maxPlasma, plasmaType = component.invoke(fusionAddress, "getFluid")
-    local plasmaTemp = component.invoke(fusionAddress, "getPlasmaTemp")
-    local maxPlasmaTemp = component.invoke(fusionAddress, "getMaxTemp")
+          maxPlasma, plasmaType = com.invoke(fusionAddress, "getFluid")
+    local plasmaTemp = com.invoke(fusionAddress, "getPlasmaTemp")
+    local maxPlasmaTemp = com.invoke(fusionAddress, "getMaxTemp")
     if maxPlasmaTemp == 3500 then
         blanketMaxDurability = 1080000
     elseif maxPlasmaTemp == 4500 then
@@ -67,7 +66,7 @@ while true do
     else
         blanketMaxDurability = 0
     end
-    local blanketDamage = component.invoke(fusionAddress, "getBlanketDamage")
+    local blanketDamage = com.invoke(fusionAddress, "getBlanketDamage")
     if blanketDamage == "N/A" then blanketDamage = 0 end
     local blanketDurability = blanketMaxDurability - blanketDamage
 
@@ -80,9 +79,9 @@ while true do
         if char == 0x74 then
             trip()
         elseif char == 0x73 and (not tripped) then
-            component.invoke(fusionAddress, "setActive", true)
+            com.invoke(fusionAddress, "setActive", true)
         elseif char == 0x78 then
-            component.invoke(fusionAddress, "setActive", false)
+            com.invoke(fusionAddress, "setActive", false)
         end
     end
     if gpuAddress ~= nil then
@@ -93,7 +92,7 @@ while true do
         else
             status = "Shutdown"
         end
-        component.invoke(gpuAddress, "fill", 1, 1, gpuWidth, gpuHeight, " ")
+        com.invoke(gpuAddress, "fill", 1, 1, 50, 16, " ")
         for i,v in ipairs(textArray) do
             gpuSet(1, i, v)
         end
@@ -105,7 +104,7 @@ while true do
         gpuSet(24, 10, plasmaType)
         gpuSet(24, 11, plasmaTemp .. "/" .. maxPlasmaTemp)
         gpuSet(24, 12, blanketDurability .. "/" .. blanketMaxDurability)
-        component.invoke(gpuAddress, "bitblt", 0, 1, 1, gpuWidth, gpuHeight, textBuffer, 1, 1)
+        com.invoke(gpuAddress, "bitblt", 0, 1, 1, 50, 16, textBuffer, 1, 1)
     end
 
 end
